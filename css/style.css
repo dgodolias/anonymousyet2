@@ -884,6 +884,22 @@ li {
 .iFrame1 {
     border: 0px;
 }
+  
+  main {
+	height: 100vh;
+	overflow-y: scroll;
+	scroll-snap-type: y mandatory;
+  }
+  
+  .section {
+	height: 100vh;
+	scroll-snap-align: start;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2em;
+  }
+  
 
 @media (max-width: 1090px) {
 	#menu a.navbar-brand {

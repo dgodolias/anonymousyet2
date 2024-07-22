@@ -302,7 +302,29 @@
 </script>
     <script type="text/javascript" src="js/canvas2.js"></script>
     <script>
-      
+      document.addEventListener("DOMContentLoaded", function() {
+  const options = {
+    threshold: 0.5
+  };
+
+  const intersectionHandler = (entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove("fadeOut");
+        entry.target.classList.add("fadeIn");
+      } else {
+        entry.target.classList.remove("fadeIn");
+        entry.target.classList.add("fadeOut");
+      }
+    });
+  };
+
+  const observer = new IntersectionObserver(intersectionHandler, options);
+  document.querySelectorAll(".section").forEach(section => {
+    observer.observe(section);
+  });
+});
+
     </script>
 
     <div style="clear: both;"></div>

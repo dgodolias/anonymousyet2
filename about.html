@@ -50,6 +50,31 @@
     </div>
 
 </div>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+      let lastScrollTime = 0;
+      let scrollTimeout;
 
+      const handleWheel = (event) => {
+        const currentTime = new Date().getTime();
+        const timeDiff = currentTime - lastScrollTime;
+
+        if (timeDiff > 500) {
+          const direction = event.deltaY > 0 ? 'down' : 'up';
+          parent.postMessage({ type: 'iframeScroll', direction: direction }, window.location.origin);
+        }
+
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+          const direction = event.deltaY > 0 ? 'down' : 'up';
+          parent.postMessage({ type: 'iframeScroll', direction: direction }, window.location.origin);
+        }, 500);
+
+        lastScrollTime = currentTime;
+      };
+
+      window.addEventListener('wheel', handleWheel, false);
+    });
+  </script>
 
 </body></html>

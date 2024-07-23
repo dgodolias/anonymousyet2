@@ -323,22 +323,6 @@
 });
 
     </script>
-    <script type="text/javascript">
-      document.addEventListener("DOMContentLoaded", function() {
-        // Existing scroll detection code
-
-        // Listen for messages from the iframe
-        window.addEventListener('message', function(event) {
-          if (event.origin !== window.location.origin) {
-            return; // Ensure the message is from the correct origin
-          }
-          const data = event.data;
-          if (data.type === 'iframeScroll') {
-            console.log('Scrolled in iframe:', data.direction);
-          }
-        });
-      });
-    </script>
 
     <div style="clear: both;"></div>
     <div style="clear: both;"></div>

@@ -6,13 +6,21 @@ document.addEventListener("DOMContentLoaded", function() {
     threshold: 0.5
   };
 
+  let currentSectionIndex = 0;
+  let isScrolling = false;
+
+  const updateNavLinks = (index) => {
+    navLinks.forEach(link => link.parentElement.classList.remove("active"));
+    navLinks[index].parentElement.classList.add("active");
+  };
+
   const intersectionHandler = (entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        navLinks.forEach(link => {
-          link.parentElement.classList.remove("active");
-          if (link.getAttribute("href").substring(1) === entry.target.id) {
-            link.parentElement.classList.add("active");
+        sections.forEach((section, index) => {
+          if (section === entry.target) {
+            currentSectionIndex = index;
+            updateNavLinks(currentSectionIndex);
           }
         });
       }
@@ -24,32 +32,58 @@ document.addEventListener("DOMContentLoaded", function() {
     observer.observe(section);
   });
 
-  let lastScrollTime = 0;
-  let scrollTimeout;
+  const navigateToSection = (index) => {
+    if (index >= 0 && index < sections.length) {
+      isScrolling = true;
+      navLinks[index].click();
+      setTimeout(() => {
+        isScrolling = false;
+      }, 1000); // Delay to prevent rapid successive scrolling
+    }
+  };
 
   const handleWheel = (event) => {
-    const currentTime = new Date().getTime();
-    const timeDiff = currentTime - lastScrollTime;
+    if (isScrolling) return;
 
-    if (timeDiff > 500) {
-      if (event.deltaY > 0) {
-        console.log("Scrolling down");
-      } else {
-        console.log("Scrolling up");
-      }
+    if (event.deltaY > 0) {
+      // Scrolling down
+      navigateToSection(currentSectionIndex + 1);
+    } else {
+      // Scrolling up
+      navigateToSection(currentSectionIndex - 1);
     }
-
-    clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => {
-      if (event.deltaY > 0) {
-        console.log("Final scroll down");
-      } else {
-        console.log("Final scroll up");
-      }
-    }, 500);
-
-    lastScrollTime = currentTime;
   };
 
   window.addEventListener('wheel', handleWheel, false);
+
+  // Listen for messages from the iframe
+  window.addEventListener('message', function(event) {
+    if (event.origin !== window.location.origin) {
+      return; // Ensure the message is from the correct origin
+    }
+    const data = event.data;
+    if (data.type === 'iframeScroll') {
+      if (data.direction === 'up') {
+        navigateToSection(currentSectionIndex - 1);
+      } else if (data.direction === 'down') {
+        navigateToSection(currentSectionIndex + 1);
+      }
+    }
+  });
+
+  // Sending scroll events to iframes
+  const iframes = document.querySelectorAll('iframe');
+  const sendScrollMessage = (direction) => {
+    iframes.forEach(iframe => {
+      iframe.contentWindow.postMessage({ type: 'iframeScroll', direction }, window.location.origin);
+    });
+  };
+
+  window.addEventListener('wheel', (event) => {
+    if (event.deltaY > 0) {
+      sendScrollMessage('down');
+    } else {
+      sendScrollMessage('up');
+    }
+  }, false);
 });

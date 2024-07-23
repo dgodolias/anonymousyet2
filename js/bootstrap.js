@@ -23,4 +23,33 @@ document.addEventListener("DOMContentLoaded", function() {
   sections.forEach(section => {
     observer.observe(section);
   });
+
+  let lastScrollTime = 0;
+  let scrollTimeout;
+
+  const handleWheel = (event) => {
+    const currentTime = new Date().getTime();
+    const timeDiff = currentTime - lastScrollTime;
+
+    if (timeDiff > 500) {
+      if (event.deltaY > 0) {
+        console.log("Scrolling down");
+      } else {
+        console.log("Scrolling up");
+      }
+    }
+
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+      if (event.deltaY > 0) {
+        console.log("Final scroll down");
+      } else {
+        console.log("Final scroll up");
+      }
+    }, 500);
+
+    lastScrollTime = currentTime;
+  };
+
+  window.addEventListener('wheel', handleWheel, false);
 });

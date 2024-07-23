@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const navLinks = document.querySelectorAll(".navbar-nav li a");
 
   const options = {
-    threshold: 0.5
+    threshold: 0.8
   };
 
   let currentSectionIndex = 0;
